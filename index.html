@@ -28,7 +28,7 @@
       }
       .container {
         flex: 1;
-        max-width: 600px;
+        max-width: 900px; /* Expandido para a tabela */
         margin: 20px auto;
         padding: 30px;
         background-color: #fff;
@@ -41,6 +41,33 @@
         padding-bottom: 10px;
         margin-bottom: 20px;
         font-size: 20px;
+      }
+      
+      /* --- Estilos de Abas --- */
+      .tab-menu {
+        display: flex;
+        border-bottom: 2px solid #ddd;
+        margin-bottom: 20px;
+      }
+      .tab-button {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background-color: transparent;
+        font-size: 16px;
+        font-weight: bold;
+        color: #555;
+      }
+      .tab-button.active {
+        border-bottom: 2px solid #3483fa;
+        color: #3483fa;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
       }
       
       /* --- Estilos de Formulário --- */
@@ -75,9 +102,6 @@
         border-radius: 4px;
         cursor: pointer;
       }
-      .cep-input-group button:hover {
-        background-color: #007b9a;
-      }
       .radio-group label, .checkbox-group label {
         display: inline-block;
         font-weight: normal;
@@ -99,11 +123,18 @@
         width: 100%;
         font-size: 16px;
       }
-      .status-message {
+      .info-results {
         margin-top: 20px;
-        font-style: italic;
-        color: green;
+        padding: 15px;
+        background-color: #fff3e0; /* Cor para alerta */
+        border: 1px solid #ffcc80;
+        border-radius: 4px;
         text-align: center;
+      }
+      .info-results a {
+        color: #e65100;
+        font-weight: bold;
+        text-decoration: none;
       }
       .footer {
         text-align: center;
@@ -112,19 +143,6 @@
         color: #888;
         background-color: #fff;
         margin-top: auto;
-      }
-      .info-results {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f0f0ff;
-        border: 1px solid #c0c0ff;
-        border-radius: 4px;
-        text-align: center;
-      }
-      .info-results a {
-        color: #3483fa;
-        font-weight: bold;
-        text-decoration: none;
       }
     </style>
   </head>
@@ -135,7 +153,12 @@
 
     <div class="container">
       
-      <div id="Formulario">
+      <div class="tab-menu">
+        <button class="tab-button active" onclick="openTab(event, 'Formulario')">📋 Formulário</button>
+        <button class="tab-button" onclick="openTab(event, 'Resultados')">💾 Resultados</button>
+      </div>
+      
+      <div id="Formulario" class="tab-content active">
         <h2>Formulário de Validação</h2>
         <p>Preencha os campos abaixo para validar seu cadastro.</p>
         
@@ -285,9 +308,23 @@
 
         </form>
         
+        </div>
+      
+      <div id="Resultados" class="tab-content">
+        <h2>📊 Visualização e Filtro dos Resultados</h2>
         <div class="info-results">
-            Para visualizar os resultados, acesse o painel Formspree e exporte os dados: 
-            <a href="https://formspree.io/f/mqavkbow" target="_blank">Acessar Painel Formspree</a>
+            <p><strong>Atenção:</strong> Os dados desta tabela são atualizados via exportação manual do Formspree para uma Planilha Google.</p>
+            <p>Última atualização: **(Data da sua última importação manual)**</p>
+            <a href="https://formspree.io/f/mqavkbow" target="_blank">Acessar Painel Formspree para Exportar o CSV</a>
+        </div>
+        
+        <div style="width: 100%; height: 600px; margin-top: 20px;">
+            <iframe 
+                src="https://docs.google.com/spreadsheets/d/[SEU_ID_DA_PLANILHA]/edit?usp=sharing&widget=true&headers=false"
+                width="100%" 
+                height="100%" 
+                frameborder="0"
+            ></iframe>
         </div>
       </div>
       
@@ -358,10 +395,7 @@
         }
       }
       
-      // =========================================================
-      // CÓDIGO DE BUSCA DE CEP (ViaCEP)
-      // =========================================================
-
+      // Função para formatar o CEP
       function formatarCEP(input) {
           var value = input.value.replace(/\D/g, ''); 
           if (value.length > 5) {
@@ -370,6 +404,7 @@
           input.value = value;
       }
 
+      // Função para buscar endereço (ViaCEP)
       function buscarEnderecoPorCEP() {
           var cepInput = document.getElementById('cep');
           var statusElement = document.getElementById('cepStatus');
@@ -405,21 +440,32 @@
               });
       }
 
-      // =========================================================
-      // LÓGICA DE SUBMISSÃO (Formspree)
-      // =========================================================
+      // Lógica de Abas
+      function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
 
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].classList.remove('active');
+        }
+
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add('active');
+      }
+
+      // Lógica de Submissão
       document.getElementById('validacaoForm').addEventListener('submit', async function(event) {
           
-          // Validação antes de submeter
           if (document.getElementById('enderecoCompleto').value.trim() === '') {
               document.getElementById('status').innerText = 'Por favor, busque e preencha o endereço.';
               event.preventDefault(); 
               return;
           }
-
-          document.getElementById('status').innerText = 'Enviando...';
-          // A submissão é tratada nativamente pelo Formspree, que fará o redirect.
       });
 
       // Inicialização
@@ -430,6 +476,9 @@
           toggleObservacoes(); 
           document.getElementById('almocoNao').checked = true;
           toggleAlmocoHorario();
+
+          // Define a aba Formulário como ativa ao carregar
+          document.getElementById('Formulario').style.display = "block";
       });
     </script>
   </body>
