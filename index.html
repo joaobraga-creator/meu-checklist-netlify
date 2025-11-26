@@ -126,13 +126,8 @@
         <h2>Formulário de Validação</h2>
         <p>Preencha os campos abaixo para validar seu cadastro.</p>
         
-        <form name="checklist" id="validacaoForm" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+        <form id="validacaoForm" method="POST" action="https://formspree.io/f/mqavkbow">
           
-          <input type="hidden" name="_next" value="/success.html" /> 
-
-          <input type="hidden" name="form-name" value="checklist" />
-          <input type="hidden" name="bot-field" />
-
           <div class="form-group">
             <label for="telefone">Número do telefone:</label>
             <input type="text" id="telefone" name="telefone" required>
@@ -394,10 +389,10 @@
       }
 
       // =========================================================
-      // LÓGICA DE SUBMISSÃO NATIVA (NETLIFY)
+      // LÓGICA DE SUBMISSÃO (Formspree)
       // =========================================================
 
-      document.getElementById('validacaoForm').addEventListener('submit', function(event) {
+      document.getElementById('validacaoForm').addEventListener('submit', async function(event) {
           
           // Validação antes de submeter
           if (document.getElementById('enderecoCompleto').value.trim() === '') {
@@ -406,8 +401,10 @@
               return;
           }
 
-          // Nota: O Netlify Forms cuida do redirecionamento através do campo _next, 
-          // então não precisamos de código JavaScript extra aqui.
+          document.getElementById('status').innerText = 'Enviando...';
+          // A submissão agora é tratada pelo Formspree, que fará o redirect para uma página de confirmação.
+          
+          // Não precisa de event.preventDefault() aqui, pois queremos a submissão nativa.
       });
 
       // Inicialização
