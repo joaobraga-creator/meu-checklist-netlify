@@ -3,70 +3,88 @@
 <head>
     <title>Resultados Restritos - ML</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         h1 { color: #3483fa; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        #app-status { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        #app-status { margin-top: 20px; padding: 15px; border-radius: 5px; text-align: center; }
         .loading { background-color: #ffc; border: 1px solid #ff0; }
         .logged-in { background-color: #cfc; border: 1px solid #0c0; }
-        .data-viewer { margin-top: 20px; }
+        #login-area { margin-top: 20px; text-align: center; }
+        #data-content { display: none; } /* Esconde o conteúdo até o login */
+        .alert-error { background-color: #fdd; border: 1px solid #f00; color: #a00; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📊 Resultados do Checklist (Acesso Restrito)</h1>
-        <div id="app-status" class="loading">Carregando status de login...</div>
+        <div id="app-status" class="loading">Iniciando o serviço de autenticação...</div>
         
-        <div id="data-content" class="data-viewer">
-            <p>Seus dados do formulário salvo no Netlify **estão disponíveis para análise** no painel de controle do Netlify.</p>
-            <p><strong>Abaixo estaria o código para carregar a tabela, mas como a leitura de dados do Netlify é complexa, recomendamos baixar o CSV no painel Netlify.</strong></p>
-            <p>Se precisar que os dados apareçam nesta tela, teremos que programar um *backend* (Netlify Function) para ler o banco de dados do Netlify Forms, o que é um passo mais complexo.</p>
-
+        <div id="login-area">
+            <p>Este conteúdo é restrito ao domínio @mercadolivre.com.</p>
+            <div data-netlify-identity-widget></div>
+            <button id="open-login-button" style="margin-top: 15px; padding: 10px 20px; background-color: #3483fa; color: white; border: none; border-radius: 4px; cursor: pointer;">Clique para Fazer Login</button>
         </div>
-        <button id="logout-button" style="display:none; margin-top: 20px;">Sair / Logout</button>
+        
+        <div id="data-content">
+            <p>✅ **Login Autorizado.** Seus dados do formulário salvo no Netlify **estão disponíveis para análise** no painel de controle do Netlify.</p>
+            <p>Para ver a tabela de resultados nesta tela, precisaremos de uma **Netlify Function** para ler os dados, mas o acesso está liberado para o domínio correto.</p>
+            
+            <button id="logout-button" style="margin-top: 20px; padding: 10px 20px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">Sair / Logout</button>
+        </div>
     </div>
 
     <script>
         const statusElement = document.getElementById('app-status');
+        const loginArea = document.getElementById('login-area');
+        const dataContent = document.getElementById('data-content');
+        const openLoginButton = document.getElementById('open-login-button');
         const logoutButton = document.getElementById('logout-button');
 
-        // FUNÇÃO DE LOGIN/LOGOUT
+        // Garante que o widget seja inicializado
         if (window.netlifyIdentity) {
+            
+            // 1. Ocorre quando o widget carrega
             window.netlifyIdentity.on('init', (user) => {
                 if (!user) {
-                    statusElement.innerHTML = 'Clique em **Login** para acessar. (Apenas e-mails @mercadolivre.com)';
-                    statusElement.className = 'loading';
-                    // Isso abre a interface de login
-                    window.netlifyIdentity.open();
+                    statusElement.innerHTML = 'Status: **Desconectado.** Clique no botão abaixo para login.';
+                    statusElement.className = 'alert-error';
+                    loginArea.style.display = 'block';
+                    dataContent.style.display = 'none';
                 } else {
                     displayUser(user);
                 }
             });
 
+            // 2. Ocorre após o login bem-sucedido
             window.netlifyIdentity.on('login', (user) => {
                 displayUser(user);
             });
             
+            // 3. Ocorre após o logout
             window.netlifyIdentity.on('logout', () => {
-                window.location.href = '/'; // Redireciona para a home após logout
+                window.location.href = '/resultados.html'; // Recarrega a página para forçar a tela de login
+            });
+            
+            // 4. Força a abertura do pop-up de login
+            openLoginButton.addEventListener('click', () => {
+                window.netlifyIdentity.open();
+            });
+
+            // 5. Função de Logout
+            logoutButton.addEventListener('click', () => {
+                window.netlifyIdentity.logout();
             });
         }
         
         function displayUser(user) {
-            statusElement.innerHTML = `✅ Logado como: <strong>${user.email}</strong>.<br> Domínio: ${user.email.split('@')[1]}`;
+            statusElement.innerHTML = `✅ **Logado com Sucesso!** Usuário: <strong>${user.email}</strong>.`;
             statusElement.className = 'logged-in';
-            logoutButton.style.display = 'block';
-            
-            // Aqui você pode adicionar a lógica para carregar os dados se tiver um backend
-            document.getElementById('data-content').style.display = 'block';
+            loginArea.style.display = 'none'; // Esconde a área de login
+            dataContent.style.display = 'block'; // Mostra o conteúdo restrito
         }
-        
-        logoutButton.addEventListener('click', () => {
-            window.netlifyIdentity.logout();
-        });
-
     </script>
 </body>
 </html>
