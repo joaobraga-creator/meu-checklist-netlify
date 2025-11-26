@@ -28,7 +28,7 @@
       }
       .container {
         flex: 1;
-        max-width: 600px; /* Foco no Formulário */
+        max-width: 600px;
         margin: 20px auto;
         padding: 30px;
         background-color: #fff;
@@ -105,9 +105,6 @@
         color: green;
         text-align: center;
       }
-
-      /* REMOVIDOS ESTILOS DE TABS E RESULTADOS */
-      
       .footer {
         text-align: center;
         padding: 15px;
@@ -129,7 +126,7 @@
         <h2>Formulário de Validação</h2>
         <p>Preencha os campos abaixo para validar seu cadastro.</p>
         
-        <form name="checklist" id="validacaoForm" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+        <form name="checklist" id="validacaoForm" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/">
           
           <input type="hidden" name="form-name" value="checklist" />
           <input type="hidden" name="bot-field" />
@@ -258,6 +255,7 @@
             <label for="complemento">Complemento (Apartamento, Sala, Bloco):</label>
             <input type="text" id="complemento" name="complemento">
           </div>
+          
           <div class="form-group">
             <label>Deseja adicionar observações extras?</label>
             <div class="radio-group">
@@ -304,7 +302,6 @@
         }
       }
       
-      // AJUSTE: Usa o ID do SELECT correto
       function toggleAlmocoHorario() {
           var simRadio = document.getElementById('almocoSim');
           var almocoHorarioGroup = document.getElementById('almocoHorarioGroup');
@@ -395,7 +392,7 @@
       }
 
       // =========================================================
-      // LÓGICA DE SUBMISSÃO NATIVA (PARA NETLIFY)
+      // LÓGICA DE SUBMISSÃO NATIVA (NETLIFY)
       // =========================================================
 
       document.getElementById('validacaoForm').addEventListener('submit', function(event) {
@@ -403,20 +400,12 @@
           // Validação antes de submeter
           if (document.getElementById('enderecoCompleto').value.trim() === '') {
               document.getElementById('status').innerText = 'Por favor, busque e preencha o endereço.';
-              event.preventDefault(); // Impede a submissão nativa
+              event.preventDefault(); 
               return;
           }
 
-          document.getElementById('status').innerText = 'Enviando...';
-          // A submissão é tratada nativamente pelo navegador/Netlify após este ponto.
-          // O Netlify irá capturar os dados do formulário e armazená-los.
-          
-          // Opcional: Limpar/resetar os campos condicionais após o envio
-          // O Netlify fará um redirect por padrão, mas se você não definir uma página de sucesso,
-          // o JavaScript abaixo pode ser útil para o UX.
-          // toggleCustomHorario();
-          // toggleNumPessoas();
-          // ... etc.
+          // A mensagem de "Enviando" não funciona bem aqui, pois o Netlify fará um redirect imediato.
+          // Deixe o Netlify cuidar da submissão.
       });
 
       // Inicialização
