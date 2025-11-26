@@ -25,7 +25,7 @@
         <div id="login-area">
             <p>Este conteúdo é restrito ao domínio @mercadolivre.com.</p>
             <div data-netlify-identity-widget></div>
-            <button id="open-login-button" style="margin-top: 15px; padding: 10px 20px; background-color: #3483fa; color: white; border: none; border-radius: 4px; cursor: pointer;">Clique para Fazer Login</button>
+            <button id="open-login-button" onclick="openNetlifyLogin()" style="margin-top: 15px; padding: 10px 20px; background-color: #3483fa; color: white; border: none; border-radius: 4px; cursor: pointer;">Clique para Fazer Login</button>
         </div>
         
         <div id="data-content">
@@ -46,13 +46,20 @@
         // URL BASE DO SEU SITE (Crucial para o Identity)
         const SITE_URL = 'https://meu-checklist-netlify.netlify.app';
 
+        // FUNÇÃO CHAMADA PELO BOTÃO
+        function openNetlifyLogin() {
+            if (window.netlifyIdentity) {
+                window.netlifyIdentity.open();
+            } else {
+                alert('Serviço de Identidade do Netlify não carregado. Tente recarregar a página.');
+            }
+        }
+
         if (window.netlifyIdentity) {
             
             // CONFIGURAÇÃO MANUAL PARA GARANTIR A URL DE REDIRECIONAMENTO CORRETA
-            // Isso deve corrigir o problema do link de redefinição de senha
             window.netlifyIdentity.config({
-                siteURL: SITE_URL,
-                // O widget tentará usar este URL para todos os redirecionamentos pós-e-mail
+                siteURL: SITE_URL
             });
             
             // 1. Ocorre quando o widget carrega
@@ -62,6 +69,7 @@
                     statusElement.className = 'alert-error';
                     loginArea.style.display = 'block';
                     dataContent.style.display = 'none';
+                    openLoginButton.style.display = 'block';
                 } else {
                     displayUser(user);
                 }
@@ -70,21 +78,15 @@
             // 2. Ocorre após o login bem-sucedido
             window.netlifyIdentity.on('login', (user) => {
                 displayUser(user);
-                // Força o fechamento do pop-up após o login (se ainda estiver aberto)
                 window.netlifyIdentity.close();
             });
             
             // 3. Ocorre após o logout
             window.netlifyIdentity.on('logout', () => {
-                window.location.href = '/resultados.html'; // Redireciona para forçar a tela de login
+                window.location.href = '/resultados.html';
             });
             
-            // 4. Força a abertura do pop-up de login
-            openLoginButton.addEventListener('click', () => {
-                window.netlifyIdentity.open();
-            });
-
-            // 5. Função de Logout
+            // Função de Logout
             logoutButton.addEventListener('click', () => {
                 window.netlifyIdentity.logout();
             });
@@ -93,8 +95,8 @@
         function displayUser(user) {
             statusElement.innerHTML = `✅ **Logado com Sucesso!** Usuário: <strong>${user.email}</strong>.`;
             statusElement.className = 'logged-in';
-            loginArea.style.display = 'none'; // Esconde a área de login
-            dataContent.style.display = 'block'; // Mostra o conteúdo restrito
+            loginArea.style.display = 'none';
+            dataContent.style.display = 'block';
         }
     </script>
 </body>
