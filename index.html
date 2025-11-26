@@ -28,7 +28,7 @@
       }
       .container {
         flex: 1;
-        max-width: 900px; /* Expandido para a tabela */
+        max-width: 900px; 
         margin: 20px auto;
         padding: 30px;
         background-color: #fff;
@@ -126,7 +126,7 @@
       .info-results {
         margin-top: 20px;
         padding: 15px;
-        background-color: #fff3e0; /* Cor para alerta */
+        background-color: #fff3e0;
         border: 1px solid #ffcc80;
         border-radius: 4px;
         text-align: center;
@@ -162,7 +162,7 @@
         <h2>Formulário de Validação</h2>
         <p>Preencha os campos abaixo para validar seu cadastro.</p>
         
-        <form id="validacaoForm" method="POST" action="https://formspree.io/f/mqavkbow">
+        <form id="validacaoForm" name="checklistForm" method="POST" enctype="application/x-www-form-urlencoded" action="https://formspree.io/f/mqavkbow">
           
           <div class="form-group">
             <label for="telefone">Número do telefone:</label>
@@ -307,14 +307,13 @@
           <button type="submit" class="btn">Enviar Informações</button>
 
         </form>
-        
-        </div>
+      </div>
       
       <div id="Resultados" class="tab-content">
         <h2>📊 Visualização e Filtro dos Resultados</h2>
         <div class="info-results">
-            <p><strong>Atenção:</strong> Os dados desta tabela são atualizados via exportação manual do Formspree para uma Planilha Google.</p>
-            <p>Última atualização: **(Data da sua última importação manual)**</p>
+            <p><strong>Atenção:</strong> Os dados nesta tabela são atualizados via exportação manual do Formspree para uma Planilha Google.</p>
+            <p><strong>Substitua o texto `[SEU_ID_DA_PLANILHA]` no código-fonte pela ID da sua Planilha.</strong></p>
             <a href="https://formspree.io/f/mqavkbow" target="_blank">Acessar Painel Formspree para Exportar o CSV</a>
         </div>
         
@@ -447,6 +446,7 @@
         tabcontent = document.getElementsByClassName("tab-content");
         for (i = 0; i < tabcontent.length; i++) {
           tabcontent[i].style.display = "none";
+          tabcontent[i].classList.remove('active');
         }
 
         tablinks = document.getElementsByClassName("tab-button");
@@ -461,6 +461,7 @@
       // Lógica de Submissão
       document.getElementById('validacaoForm').addEventListener('submit', async function(event) {
           
+          // Validação antes de submeter
           if (document.getElementById('enderecoCompleto').value.trim() === '') {
               document.getElementById('status').innerText = 'Por favor, busque e preencha o endereço.';
               event.preventDefault(); 
@@ -478,7 +479,7 @@
           toggleAlmocoHorario();
 
           // Define a aba Formulário como ativa ao carregar
-          document.getElementById('Formulario').style.display = "block";
+          document.getElementById('Formulario').classList.add('active');
       });
     </script>
   </body>
