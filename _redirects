@@ -1,0 +1,7 @@
+# Regra de proteção: Se não estiver logado, redireciona para o Identity Widget
+/resultados.html /.netlify/identity 401!
+
+# Regras de Autenticação: Garante que os links de e-mail (convite, redefinição) funcionem corretamente
+/confirm /resultados.html 200
+/invite /resultados.html 200
+/reset /resultados.html 200
