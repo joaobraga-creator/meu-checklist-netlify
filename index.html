@@ -126,8 +126,10 @@
         <h2>Formulário de Validação</h2>
         <p>Preencha os campos abaixo para validar seu cadastro.</p>
         
-        <form name="checklist" id="validacaoForm" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/">
+        <form name="checklist" id="validacaoForm" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
           
+          <input type="hidden" name="_next" value="/success.html" /> 
+
           <input type="hidden" name="form-name" value="checklist" />
           <input type="hidden" name="bot-field" />
 
@@ -404,8 +406,8 @@
               return;
           }
 
-          // A mensagem de "Enviando" não funciona bem aqui, pois o Netlify fará um redirect imediato.
-          // Deixe o Netlify cuidar da submissão.
+          // Nota: O Netlify Forms cuida do redirecionamento através do campo _next, 
+          // então não precisamos de código JavaScript extra aqui.
       });
 
       // Inicialização
